@@ -513,7 +513,15 @@ ifeq ($(TARGET_ARCH),arm)
 	LOCAL_SRC_FILES += $(arm_src_files)
 	LOCAL_CFLAGS += $(arm_cflags)
 else
-	LOCAL_SRC_FILES += $(non_arm_src_files)
+	ifeq ($(TARGET_ARCH),x86_64)
+		#64 bit x86 build fails because it's not finding ASM methods. For that reason
+		# we are disabling ASM for it. It shouldn't be too hard to create an
+		# arm_src_files for x86_64 -> x86_64_src_files but time doesn't permit it!
+		LOCAL_SRC_FILES += $(non_arm_src_files)
+		LOCAL_CFLAGS += -DOPENSSL_NO_ASM
+	else
+		LOCAL_SRC_FILES += $(non_arm_src_files)
+	endif
 endif
 ifeq ($(TARGET_SIMULATOR),true)
 	# Make valgrind happy.
